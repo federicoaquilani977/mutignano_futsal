@@ -1,0 +1,262 @@
+@import "tailwindcss";
+
+/* === THEME (Tailwind v4) === */
+@theme {
+  --color-nero: #0D0D0D;
+  --color-oro: #C9A961;
+  --color-oro-scuro: #A38744;
+  --color-bianco: #FAFAFA;
+  --color-grigio: #8A8A8A;
+
+  --font-display: var(--font-cormorant);
+  --font-sans: var(--font-montserrat);
+
+  --shadow-soft: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+/* === BASE === */
+:root { --gutter: clamp(24px, 6vw, 96px); }
+html, body { height: 100%; }
+
+/* === UTILITIES GLOBALI === */
+@utility container-page {
+  max-width: 1600px;
+  margin-inline: auto;
+  padding-inline: 8%;
+}
+@utility section-pad { padding-block: 6rem; }
+@utility section-pad-md { padding-block: 8rem; }
+
+@utility badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-oro);
+}
+.badge::before,
+.badge::after {
+  content: "";
+  display: block;
+  height: 1px;
+  width: 2.5rem;
+  background-color: var(--color-oro);
+}
+
+/* Marquee (sponsor strip) */
+@keyframes marquee-x { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+.marquee__inner {
+  display: flex; gap: 2rem; padding-block: .75rem;
+  animation: marquee-x 18s linear infinite;
+  width: max-content;
+}
+.marquee__item {
+  opacity: .6; text-transform: uppercase; letter-spacing: .16em; font-size: .72rem;
+}
+
+/* Card elegante coerente */
+@utility card-elevated {
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,.10);
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(201,169,97,.06), transparent 40%),
+    rgba(0,0,0,.40);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Titoli con micro-ornamento */
+.hr-ornament { position: relative; padding-top: .5rem; margin-top: .25rem; }
+.hr-ornament::before,
+.hr-ornament::after {
+  content:""; position:absolute; left:0; right:0; height:1px; top:0;
+  background: linear-gradient(90deg, transparent, rgba(201,169,97,.32), transparent);
+}
+
+/* === BANDE DI SEZIONE + FADE (continuità visiva) === */
+.section-band,
+.section-band--alt,
+.section-band--contrast { position: relative; }
+
+.section-band::before,
+.section-band::after,
+.section-band--alt::before,
+.section-band--alt::after,
+.section-band--contrast::before,
+.section-band--contrast::after {
+  content:"";
+  position:absolute; left:0; right:0; height:80px; pointer-events:none;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(13,13,13,.6) 60%, rgba(13,13,13,0) 100%);
+  filter: blur(6px);
+}
+.section-band::before,
+.section-band--alt::before,
+.section-band--contrast::before { top:-40px; }
+.section-band::after,
+.section-band--alt::after,
+.section-band--contrast::after { bottom:-40px; }
+
+/* Superfici trasparenti uniformi (skin dei wrapper) */
+@utility surface        { background: rgba(0,0,0,.28); }
+@utility surface-alt    { background: rgba(0,0,0,.36); }
+@utility surface-strong { background: rgba(0,0,0,.44); }
+
+/* === AURORA (keyframes usati dal ParallaxBackground) === */
+@keyframes aurora-shift {
+  0%   { transform: translate3d(-10%, -8%, 0) rotate(0deg) scale(1);   filter: blur(40px); }
+  50%  { transform: translate3d( 10%,  6%, 0) rotate(15deg) scale(1.05); filter: blur(46px); }
+  100% { transform: translate3d(-10%, -8%, 0) rotate(0deg) scale(1);   filter: blur(40px); }
+}
+
+/* === HERO HELPERS === */
+/* sfuma l'overlay dall'alto fino all'altezza header (se serve) */
+.mask-from-header {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 calc(var(--header-h) + 12px), #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 calc(var(--header-h) + 12px), #000 100%);
+}
+/* fa “salire” l’Hero sotto l’header solo nelle pagine che lo usano */
+@utility pull-under-header { margin-top: calc(-1 * var(--header-h)); }
+
+/* taglio diagonale morbido */
+.shape-diag {
+  clip-path: polygon(0 0, 100% 0, 100% 82%, 0 100%);
+}
+
+/* angolo top-right super stondato (solo su schermi >= md) */
+@media (min-width: 768px) {
+  .round-tr-xl { border-top-right-radius: 2rem; }
+}
+
+/* bordo/glow dorato sottile lungo il perimetro */
+.glow-edge {
+  position: relative;
+}
+.glow-edge::after {
+  content:"";
+  position:absolute; inset:0; border-radius: inherit;
+  pointer-events:none;
+  box-shadow: 0 0 0 1px rgba(201,169,97,.35), 0 0 40px rgba(201,169,97,.15) inset;
+}
+
+/* glass card elegante */
+.glass {
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+  border: 1px solid rgba(255,255,255,.12);
+  backdrop-filter: blur(8px);
+  border-radius: 1.25rem;
+}
+/* full-bleed: sfonda i padding e va da bordo a bordo viewport */
+@utility full-bleed {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+}
+
+/* nasconde le scrollbar orizzontali del track */
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+@utility content-narrow {
+  max-width: 78ch;
+  margin-inline: auto;
+}
+
+@utility content-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+@utility site-gutters {
+  padding-left: calc(var(--gutter) + env(safe-area-inset-left));
+  padding-right: calc(var(--gutter) + env(safe-area-inset-right));
+}
+@utility header-gutters {
+  padding-left: clamp(28px, 7vw, 120px);
+  padding-right: clamp(28px, 7vw, 120px);
+}
+
+@utility panel-visual {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;            /* mantiene lo stile, ma puoi portarlo a 0 */
+}
+
+@utility overlay-soft {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.00) 0%,
+    rgba(0,0,0,0.28) 35%,
+    rgba(0,0,0,0.60) 100%
+  );
+}
+
+@utility panel-glass {
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 1.25rem;
+  backdrop-filter: blur(8px);
+}
+
+@utility band-hairline {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+  margin-top: 2rem;
+}
+
+
+
+/* === HUB SEAMLESS === */
+
+/* tile nudo: zero raggio, zero shadow, si fonde al fondo */
+@utility tile {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0;          /* niente curve */
+}
+
+/* overlay per leggibilità (sfuma SOLO in basso) */
+@utility tile-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 30%, rgba(0,0,0,.65) 100%);
+  pointer-events: none;
+}
+
+/* diagonale “ritaglio” che si amalgama al fondo */
+@utility tile-diagonal {
+  position: absolute; inset: 0;
+  clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%);
+  background: linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.6));
+  pointer-events: none;
+}
+
+/* banda soft sotto: aiuta la fusione col resto della pagina */
+@utility hub-vignette {
+  height: 60px;
+  background: radial-gradient(60% 100% at 50% 120%, rgba(201,169,97,.18), transparent 70%);
+  opacity: .35;
+}
+
+/* alone dorata molto leggera, per dare profondità senza sembrare una card */
+@utility aurora-soft {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 70% at 15% 20%, rgba(201,169,97,.14), transparent 60%),
+    radial-gradient(50% 60% at 85% 30%, rgba(201,169,97,.10), transparent 65%);
+  mix-blend-mode: screen;
+  filter: blur(8px);
+  opacity: .55;
+}
