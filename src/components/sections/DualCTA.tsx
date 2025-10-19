@@ -1,13 +1,11 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import Image from "next/image";
-import { Reveal } from "@/lib/ui";
+import Link from 'next/link'
+import Image from 'next/image'
+import { Reveal } from '@/lib/ui'
 
 const IMG_BOOK =
-  "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=1600&auto=format&fit=crop";
-const IMG_JOIN =
-  "https://images.unsplash.com/photo-1599058917785-1cf1f3a28536?q=80&w=1600&auto=format&fit=crop";
+  'https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=1600&auto=format&fit=crop'
 
 export default function DualCTA() {
   return (
@@ -86,5 +84,5 @@ export default function DualCTA() {
       {/* fascia decorativa soft in fondo */}
       <div className="pointer-events-none full-bleed h-20 mt-8 bg-[radial-gradient(60%_100%_at_50%_120%,rgba(201,169,97,.20),transparent_70%)]" />
     </section>
-  );
+  )
 }
