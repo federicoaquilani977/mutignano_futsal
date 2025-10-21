@@ -1,12 +1,11 @@
-"use client";
+'use client'
 
 export default function Hero() {
   return (
     <section className="relative z-0 h-[100vh] overflow-hidden pull-under-header">
-      {/* Video background */}
-      <video
+      {/* <video
         className="absolute inset-0 h-full w-full object-cover"
-        src="/videos/hero.mp4"
+        src="/videos/hero.mov"
         poster="/videos/hero-poster.jpg"
         autoPlay
         muted
@@ -15,7 +14,7 @@ export default function Hero() {
         preload="metadata"
         aria-hidden="true"
       />
-
+*/}
       {/* Overlay continuo: evita banda sotto l'header */}
       <div className="absolute inset-0 pointer-events-none">
         {/* gradiente top -> evita la riga */}
@@ -23,11 +22,11 @@ export default function Hero() {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(to bottom," +
-              "rgba(0,0,0,0) 0," +
-              "rgba(0,0,0,0) var(--header-h)," +
-              "rgba(0,0,0,.28) calc(var(--header-h) + 48px)," +
-              "rgba(0,0,0,.55) 100%)",
+              'linear-gradient(to bottom,' +
+              'rgba(0,0,0,0) 0,' +
+              'rgba(0,0,0,0) var(--header-h),' +
+              'rgba(0,0,0,.28) calc(var(--header-h) + 48px),' +
+              'rgba(0,0,0,.55) 100%)',
           }}
         />
         {/* leggera vignetta radiale per profondità */}
@@ -37,7 +36,7 @@ export default function Hero() {
       {/* Fallback per utenti con “Riduci animazioni” attivo */}
       <div
         className="absolute inset-0 hidden motion-reduce:block bg-cover bg-center"
-        style={{ backgroundImage: "url(/videos/hero-poster.jpg)" }}
+        style={{ backgroundImage: 'url(/videos/hero-poster.jpg)' }}
         aria-hidden="true"
       />
 
@@ -69,5 +68,5 @@ export default function Hero() {
         </div>
       </div>
     </section>
-  );
+  )
 }

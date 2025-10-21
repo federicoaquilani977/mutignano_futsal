@@ -24,8 +24,8 @@ html, body { height: 100%; }
   margin-inline: auto;
   padding-inline: 8%;
 }
-@utility section-pad { padding-block: 6rem; }
-@utility section-pad-md { padding-block: 8rem; }
+@utility section-pad { padding-block: 4rem; }      /* 64px invece di 96px */
+@utility section-pad-md { padding-block: 5rem; }   /* 80px invece di 128px */
 
 @utility badge {
   display: inline-flex;
