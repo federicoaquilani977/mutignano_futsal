@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { Reveal } from '@/lib/ui'
 
 const IMG_BOOK =
-  'https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=1600&auto=format&fit=crop'
+  'https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=1600&auto=format&fit=crop'
 
 export default function DualCTA() {
   return (

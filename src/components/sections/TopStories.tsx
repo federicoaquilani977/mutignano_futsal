@@ -1,206 +1,266 @@
-"use client";
+'use client'
 
-import Image from "next/image";
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { Reveal } from "@/lib/ui";
+import Image from 'next/image'
+import Link from 'next/link'
+import { useState, useEffect, useRef } from 'react'
 
 type Story = {
-  id: string;
-  title: string;
-  kicker?: string;
-  href: string;
-  coverUrl: string;
-};
+  id: string
+  title: string
+  kicker: string
+  excerpt: string
+  href: string
+  coverUrl: string
+}
+
 const STORIES: Story[] = [
   {
-    id: "st1",
-    title: "Presentazione ufficiale stagione",
-    kicker: "CLUB",
-    href: "/news/presentazione-stagione",
+    id: 'st1',
+    title: 'Presentazione ufficiale stagione',
+    kicker: 'CLUB',
+    excerpt: 'Rosa completa, obiettivi ambiziosi e nuovo staff tecnico',
+    href: '/news/presentazione-stagione',
     coverUrl:
-      "https://images.pexels.com/photos/47730/the-ball-stadion-football-the-pitch-47730.jpeg",
+      'https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=2400',
   },
   {
-    id: "st2",
-    title: "Calendario tornei: iscriviti ora",
-    kicker: "EVENTI",
-    href: "/eventi",
+    id: 'st2',
+    title: 'Tornei di primavera: iscrizioni aperte',
+    kicker: 'EVENTI',
+    excerpt: 'Padel e tennis, iscriviti ora ai tornei amatoriali',
+    href: '/eventi',
     coverUrl:
-      "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=2000&auto=format&fit=crop",
+      'https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=2400',
   },
   {
-    id: "st3",
-    title: "Nuovi sponsor a bordo",
-    kicker: "SPONSOR",
-    href: "/news/sponsor",
+    id: 'st3',
+    title: 'Nuove partnership strategiche',
+    kicker: 'SPONSOR',
+    excerpt: 'Tre sponsor entrano nel progetto SS Pineto',
+    href: '/news/sponsor',
     coverUrl:
-      "https://images.pexels.com/photos/47730/the-ball-stadion-football-the-pitch-47730.jpeg",
+      'https://images.unsplash.com/photo-1552667466-07770ae110d0?q=80&w=2400',
   },
   {
-    id: "st4",
-    title: "Nuovi sponsor a bordo",
-    kicker: "SPONSOR",
-    href: "/news/sponsor",
+    id: 'st4',
+    title: 'Vittoria in trasferta: 5-2',
+    kicker: 'PARTITA',
+    excerpt: 'Grande prestazione della squadra in Serie D',
+    href: '/news/vittoria',
     coverUrl:
-      "https://images.pexels.com/photos/47730/the-ball-stadion-football-the-pitch-47730.jpeg",
+      'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=2400',
   },
-];
+]
 
-export default function TopStories() {
-  const trackRef = useRef<HTMLDivElement | null>(null);
-  const [idx, setIdx] = useState(0);
-  const count = STORIES.length;
+export default function HeroStories() {
+  const [current, setCurrent] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
 
-  // osserva quale slide è centrata
+  // Autoplay logic
   useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    const slides = Array.from(el.querySelectorAll<HTMLElement>("[data-slide]"));
-    const obs = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible) {
-          const i = Number((visible.target as HTMLElement).dataset.index);
-          setIdx(i);
-        }
-      },
-      { root: el, threshold: [0.6] }
-    );
-    slides.forEach((s) => obs.observe(s));
-    return () => obs.disconnect();
-  }, []);
+    const startTimer = () => {
+      timerRef.current = setInterval(() => {
+        setCurrent((prev) => (prev + 1) % STORIES.length)
+      }, 6000)
+    }
 
-  // autoplay dolce (pausa se hover/scroll manuale)
-  useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    let hover = false;
-    const onEnter = () => (hover = true);
-    const onLeave = () => (hover = false);
-    el.addEventListener("mouseenter", onEnter);
-    el.addEventListener("mouseleave", onLeave);
+    const stopTimer = () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+        timerRef.current = null
+      }
+    }
 
-    const id = setInterval(() => {
-      if (hover) return;
-      const next = (idx + 1) % count;
-      el.scrollTo({ left: calcLeft(next, el), behavior: "smooth" });
-    }, 5000);
+    if (!isPaused) {
+      startTimer()
+    } else {
+      stopTimer()
+    }
 
-    return () => {
-      clearInterval(id);
-      el.removeEventListener("mouseenter", onEnter);
-      el.removeEventListener("mouseleave", onLeave);
-    };
-  }, [idx, count]);
+    return () => stopTimer()
+  }, [isPaused])
 
-  const go = (i: number) => {
-    const el = trackRef.current;
-    if (!el) return;
-    el.scrollTo({ left: calcLeft(i, el), behavior: "smooth" });
-  };
+  const goToSlide = (index: number) => {
+    if (index !== current) {
+      setCurrent(index)
+    }
+  }
+
+  const goToPrev = () => {
+    setCurrent((prev) => (prev === 0 ? STORIES.length - 1 : prev - 1))
+  }
+
+  const goToNext = () => {
+    setCurrent((prev) => (prev + 1) % STORIES.length)
+  }
 
   return (
-    <section className="section-pad">
-      <div className="site-gutters">
-        <div className="badge mb-6">
-          <span>In evidenza</span>
+    <section className="relative h-[90vh] min-h-[700px] w-full overflow-hidden bg-nero">
+      {/* Background Images with Parallax */}
+      <div className="absolute inset-0">
+        {STORIES.map((story, idx) => (
+          <div
+            key={story.id}
+            className="absolute inset-0 transition-all duration-1000 ease-out"
+            style={{
+              opacity: idx === current ? 1 : 0,
+              transform: idx === current ? 'scale(1)' : 'scale(1.05)',
+            }}
+          >
+            <Image
+              src={story.coverUrl}
+              alt={story.title}
+              fill
+              className="object-cover"
+              unoptimized
+              priority={idx === 0}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Gradient Overlays */}
+      <div className="absolute inset-0 bg-gradient-to-t from-nero via-nero/60 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-nero/90 via-nero/40 to-transparent" />
+
+      {/* Content Container */}
+      <div className="relative h-full flex flex-col justify-end px-8 md:px-16 lg:px-24 pb-40">
+        <div className="max-w-5xl">
+          {STORIES.map((story, idx) => (
+            <div
+              key={story.id}
+              className="transition-all duration-700 ease-out"
+              style={{
+                opacity: idx === current ? 1 : 0,
+                transform:
+                  idx === current ? 'translateY(0)' : 'translateY(30px)',
+                position: idx === current ? 'relative' : 'absolute',
+                pointerEvents: idx === current ? 'auto' : 'none',
+              }}
+            >
+              {/* Kicker */}
+              <div className="mb-6">
+                <span className="inline-block px-5 py-2.5 bg-oro text-nero text-xs font-bold uppercase tracking-[0.25em]">
+                  {story.kicker}
+                </span>
+              </div>
+
+              {/* Title */}
+              <h1 className="font-display text-white text-[clamp(2.5rem,7vw,6rem)] leading-[0.95] tracking-tight mb-8 max-w-4xl">
+                {story.title}
+              </h1>
+
+              {/* Excerpt */}
+              <p className="text-white/90 text-xl md:text-2xl leading-relaxed mb-10 max-w-2xl">
+                {story.excerpt}
+              </p>
+
+              {/* CTA */}
+              <Link
+                href={story.href}
+                className="group inline-flex items-center gap-3 px-8 py-4 bg-oro text-nero font-bold text-sm uppercase tracking-wider hover:bg-white transition-all duration-300"
+              >
+                <span>Scopri di più</span>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  className="group-hover:translate-x-1 transition-transform duration-300"
+                >
+                  <path
+                    d="M4 10h12m-4-4l4 4-4 4"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </Link>
+            </div>
+          ))}
         </div>
       </div>
 
-      <div className="relative">
-        {/* track */}
-        <div
-          ref={trackRef}
-          className="snap-x snap-mandatory overflow-x-auto overscroll-x-contain no-scrollbar px-[8%] scroll-pl-[8%]"
-          role="region"
-          aria-label="Top stories"
-        >
-          <ul className="flex gap-6">
-            {STORIES.map((s, i) => (
-              <li
-                key={s.id}
-                data-slide
-                data-index={i}
-                className="min-w-[88%] md:min-w-[72%] lg:min-w-[58%] snap-center"
+      {/* Navigation Controls */}
+      <div
+        className="absolute bottom-0 left-0 right-0 px-8 md:px-16 lg:px-24 pb-10"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        <div className="flex items-center justify-between max-w-7xl mx-auto">
+          {/* Progress Dots */}
+          <div className="flex gap-3">
+            {STORIES.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => goToSlide(idx)}
+                className="group relative h-1 bg-white/20 hover:bg-white/30 transition-colors"
+                style={{ width: '80px' }}
+                aria-label={`Go to slide ${idx + 1}`}
               >
-                <Reveal
-                  index={i}
-                  className="relative h-[56vh] min-h-[420px] overflow-hidden rounded-[1.25rem] card-elevated"
-                >
-                  <Image
-                    src={s.coverUrl}
-                    alt={s.title}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                    sizes="(min-width:1024px) 60vw, 88vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                  <Link href={s.href} className="relative block h-full">
-                    <div className="absolute bottom-0 left-0 p-6 md:p-8 max-w-[720px]">
-                      {s.kicker && (
-                        <div
-                          className="rounded-full inline-flex px-3 py-1 text-[10px] uppercase tracking-[0.16em]
-                                        bg-[color:var(--color-oro)] text-[color:var(--color-nero)] mb-3"
-                        >
-                          {s.kicker}
-                        </div>
-                      )}
-                      <h3 className="font-display text-[clamp(2rem,4.6vw,3.4rem)] leading-[1.06] tracking-tight">
-                        {s.title}
-                      </h3>
-                      <div className="mt-4 inline-flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-white/80 hover:text-white">
-                        Apri <span aria-hidden>→</span>
-                      </div>
-                    </div>
-                  </Link>
-                </Reveal>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* controls */}
-        <div className="absolute inset-x-0 -bottom-10 flex items-center justify-center gap-6">
-          <button
-            onClick={() => go((idx - 1 + count) % count)}
-            className="px-3 py-1.5 rounded-full border border-white/20 text-xs uppercase tracking-[0.16em] text-white/80 hover:text-white hover:border-white"
-          >
-            Prev
-          </button>
-          <div className="flex gap-2">
-            {STORIES.map((_, i) => (
-              <span
-                key={i}
-                className={`h-1.5 rounded-full transition-all ${
-                  i === idx
-                    ? "w-8 bg-[color:var(--color-oro)]"
-                    : "w-4 bg-white/25"
-                }`}
-              />
+                <div
+                  className="absolute left-0 top-0 h-full bg-oro transition-all"
+                  style={{
+                    width: idx === current ? '100%' : '0%',
+                    transitionDuration:
+                      idx === current && !isPaused ? '6000ms' : '300ms',
+                    transitionTimingFunction:
+                      idx === current ? 'linear' : 'ease',
+                  }}
+                />
+              </button>
             ))}
           </div>
-          <button
-            onClick={() => go((idx + 1) % count)}
-            className="px-3 py-1.5 rounded-full border border-white/20 text-xs uppercase tracking-[0.16em] text-white/80 hover:text-white hover:border-white"
-          >
-            Next
-          </button>
+
+          {/* Counter */}
+          <div className="flex items-center gap-8">
+            <div className="text-white/60 text-sm font-mono">
+              <span className="text-oro text-2xl font-bold">
+                {(current + 1).toString().padStart(2, '0')}
+              </span>
+              <span className="text-white/40 mx-2">/</span>
+              <span className="text-lg">
+                {STORIES.length.toString().padStart(2, '0')}
+              </span>
+            </div>
+
+            {/* Arrow Navigation */}
+            <div className="flex gap-2">
+              <button
+                onClick={goToPrev}
+                className="w-12 h-12 flex items-center justify-center border border-white/30 text-white/60 hover:border-oro hover:text-oro hover:bg-oro/10 transition-all duration-300"
+                aria-label="Previous"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path
+                    d="M12 16l-6-6 6-6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </button>
+
+              <button
+                onClick={goToNext}
+                className="w-12 h-12 flex items-center justify-center border border-white/30 text-white/60 hover:border-oro hover:text-oro hover:bg-oro/10 transition-all duration-300"
+                aria-label="Next"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path
+                    d="M8 16l6-6-6-6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
-  );
-}
-
-function calcLeft(i: number, el: HTMLDivElement) {
-  const slides = Array.from(el.querySelectorAll<HTMLElement>("[data-slide]"));
-  const target = slides[i];
-  if (!target) return 0;
-  const rect = target.getBoundingClientRect();
-  const container = el.getBoundingClientRect();
-  const offset = rect.left - container.left;
-  return el.scrollLeft + offset - (container.width - rect.width) / 2;
+  )
 }
